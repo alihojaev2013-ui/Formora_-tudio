@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FORMORA Studio</title>
+  <link rel="stylesheet" href="style.css">
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <header>
+    <div class="brand"><span class="logo">F</span>
+      <div><b>FORMORA</b><small>3D DESIGN STUDIO</small></div>
+    </div>
+    <div class="header-buttons">
+      <button id="saveBtn">Save project</button>
+      <button id="exportBtn" class="primary">Export GLB</button>
+    </div>
+  </header>
+
+  <main>
+    <aside class="panel left">
+      <h3>WORKSPACE MODE</h3>
+      <div class="two">
+        <button id="objectMode" class="active">Object</button>
+        <button id="vertexMode">Vertex</button>
+      </div>
+      <p class="muted">Object: move entire objects. Vertex: drag points to change a shape.</p>
+
+      <hr>
+      <h3>ADD SHAPES</h3>
+      <div class="shapes">
+        <button data-shape="box"><span>▰</span>Cube</button>
+        <button data-shape="sphere"><span>●</span>Sphere</button>
+        <button data-shape="cylinder"><span>▤</span>Cylinder</button>
+        <button data-shape="cone"><span>△</span>Cone</button>
+        <button data-shape="torus"><span>◎</span>Torus</button>
+        <button data-shape="capsule"><span>▯</span>Capsule</button>
+        <button data-shape="knot"><span>♧</span>Torus knot</button>
+        <button data-shape="plane"><span>▱</span>Plane</button>
+        <button data-shape="ico"><span>⬡</span>Icosahedron</button>
+        <button data-shape="octa"><span>◇</span>Octahedron</button>
+        <button data-shape="ring"><span>◉</span>Ring</button>
+        <button data-shape="pyramid"><span>▲</span>Pyramid</button>
+      </div>
+
+      <hr>
+      <h3>STARTER DESIGNS</h3>
+      <div class="two">
+        <button data-template="shoe">Sneaker</button>
+        <button data-template="bag">Handbag</button>
+        <button data-template="shirt">T-shirt</button>
+        <button data-template="chair">Chair</button>
+      </div>
+
+      <hr>
+      <h3>VIEW</h3>
+      <div class="two">
+        <button id="gridBtn" class="active">Grid</button>
+        <button id="focusBtn">Focus</button>
+        <button id="wireBtn">Wireframe</button>
+        <button id="clearBtn">Clear scene</button>
+      </div>
+      <p class="muted">Drag to orbit · Scroll to zoom · Right-drag to pan</p>
+    </aside>
+
+    <section id="stage">
+      <div id="viewport"></div>
+      <div id="error" hidden></div>
+      <div class="stage-top">
+        <span id="modeLabel">OBJECT MODE</span>
+        <div class="tools">
+          <button id="moveBtn" class="active">Move</button>
+          <button id="rotateBtn">Rotate</button>
+          <button id="scaleBtn">Scale</button>
+        </div>
+      </div>
+      <div class="stage-bottom" id="hint">Choose a shape to begin.</div>
+    </section>
+
+    <aside class="panel right">
+      <h3>SCENE OBJECTS</h3>
+      <div id="hierarchy"></div>
+      <p id="noObjects" class="muted">No objects yet. Add a shape.</p>
+
+      <hr>
+      <h3>TRANSFORM</h3>
+      <label>Object name</label>
+      <input id="objectName" placeholder="Select an object">
+
+      <label>Position X / Y / Z</label>
+      <div class="three">
+        <input id="px" type="number" step=".1" aria-label="Position X">
+        <input id="py" type="number" step=".1" aria-label="Position Y">
+        <input id="pz" type="number" step=".1" aria-label="Position Z">
+      </div>
+
+      <label>Scale X / Y / Z</label>
+      <div class="three">
+        <input id="sx" type="number" step=".1" min=".05" aria-label="Scale X">
+        <input id="sy" type="number" step=".1" min=".05" aria-label="Scale Y">
+        <input id="sz" type="number" step=".1" min=".05" aria-label="Scale Z">
+      </div>
+
+      <label>Rotation X / Y / Z · degrees</label>
+      <div class="three">
+        <input id="rx" type="number" step="5" aria-label="Rotation X">
+        <input id="ry" type="number" step="5" aria-label="Rotation Y">
+        <input id="rz" type="number" step="5" aria-label="Rotation Z">
+      </div>
+
+      <div class="two action-row">
+        <button id="duplicateBtn">Duplicate</button>
+        <button id="deleteBtn" class="danger">Delete</button>
+      </div>
+
+      <hr>
+      <h3>SHAPE ROUNDNESS</h3>
+      <label>Corner radius <span id="roundValue">0.12</span></label>
+      <input id="roundness" type="range" min="0" max=".48" step=".01" value=".12">
+      <button id="roundBtn" class="wide">Apply to cube</button>
+      <p class="muted">Roundness applies to cube-shaped objects.</p>
+
+      <hr>
+      <h3>COLOR & GRADIENT</h3>
+      <label>Base color</label>
+      <input id="color" type="color" value="#8b78ff">
+      <div class="swatches">
+        <button data-color="#8b78ff" style="background:#8b78ff"></button>
+        <button data-color="#ff6685" style="background:#ff6685"></button>
+        <button data-color="#4ed8b0" style="background:#4ed8b0"></button>
+        <button data-color="#52a8ff" style="background:#52a8ff"></button>
+        <button data-color="#f2f2f5" style="background:#f2f2f5"></button>
+        <button data-color="#252733" style="background:#252733"></button>
+      </div>
+      <div class="two">
+        <div><label>Gradient A</label><input id="gradA" type="color" value="#7c5cff"></div>
+        <div><label>Gradient B</label><input id="gradB" type="color" value="#ff6699"></div>
+      </div>
+      <label>Gradient direction</label>
+      <select id="gradientDirection">
+        <option value="horizontal">Horizontal</option>
+        <option value="vertical">Vertical</option>
+        <option value="diagonal">Diagonal</option>
+      </select>
+      <button id="gradientBtn" class="wide">Apply gradient</button>
+      <label>Upload image texture</label>
+      <input id="textureFile" type="file" accept="image/*">
+
+      <hr>
+      <h3>MATERIAL</h3>
+      <label>Metalness <span id="metalValue">0.15</span></label>
+      <input id="metalness" type="range" min="0" max="1" step=".01" value=".15">
+      <label>Roughness <span id="roughValue">0.48</span></label>
+      <input id="roughness" type="range" min="0" max="1" step=".01" value=".48">
+
+      <hr>
+      <h3>OPACITY</h3>
+      <label>All objects <span id="opacityValue">100%</span></label>
+      <input id="opacity" type="range" min=".05" max="1" step=".05" value="1">
+      <label>Unselected objects <span id="fadeValue">22%</span></label>
+      <input id="fade" type="range" min=".05" max="1" step=".05" value=".22">
+
+      <hr>
+      <h3>LIGHTS & SHADOWS</h3>
+      <label>Key light <span id="lightValue">3.0</span></label>
+      <input id="lightPower" type="range" min=".2" max="6" step=".1" value="3">
+      <label>Ambient light <span id="ambientValue">1.1</span></label>
+      <input id="ambientPower" type="range" min=".1" max="3" step=".1" value="1.1">
+      <div class="two">
+        <button id="shadowBtn" class="active">Shadows on</button>
+        <button id="lightsBtn" class="active">Studio lights</button>
+      </div>
+      <button id="screenshotBtn" class="wide">Screenshot PNG</button>
+    </aside>
+  </main>
+
+  <footer><span id="status">Ready</span><span>W Move · E Rotate · R Scale · Ctrl+D Duplicate · Delete Remove</span></footer>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
